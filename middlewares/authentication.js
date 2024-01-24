@@ -2,6 +2,7 @@ const { verifyToken } = require("../helpers/jwt");
 const {User} = require('../models')
 async function authenticationUser(req,res,next){
     try {
+        // console.log("masuk auth")
         const {access_token} = req.headers
         if (!access_token) throw {name:"unauthenticated"}
 
@@ -20,3 +21,5 @@ async function authenticationUser(req,res,next){
         next(error)
     }
 }
+
+module.exports = authenticationUser
