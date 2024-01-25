@@ -6,7 +6,11 @@ const { User } = require('../models')
 class UserController{
     static async postRegister(req,res,next){
         try {
-            res.status(201).json()
+            const {name, username,email, password, phoneNumber, address,role} = req.body
+            const createUser = await User.create({name,username,email, password, phoneNumber, address,role})
+
+
+            res.status(201).json({createUser})
         } catch (error) {
             next(error)
         }
@@ -19,15 +23,16 @@ class UserController{
             if (!email) throw {name:'noEmail'}
             if (!password) throw {name:'noPass'}
 
-            const getUser = User.findOne({where:{email}})
+            const getUser = await User.findOne({where:{email}})
+            console.log('USER>>>',getUser)
 
             if (!getUser) throw {name:'invalidUser'}
 
             const verifPass = checkPass(password,getUser.password)
-            if (!getUser) throw {name:'invalidUser'}
+            if (!verifPass) throw {name:'invalidUser'}
 
             const accessToken = createToken(getUser.id)
-            res.status(200).json({accessToken:req.user.accessToken,name:getUser.name, role:getUser.role,id:getUser.id})
+            res.status(200).json({accessToken:accessToken,name:getUser.name, role:getUser.role,id:getUser.id})
             
         } catch (error) {
             next(error)
